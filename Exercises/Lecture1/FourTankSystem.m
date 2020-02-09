@@ -128,6 +128,19 @@ Figure2by2(T,X/1000,nX,'Masses','m[kg]') %Divided over 1000 to transform to kg
 Figure2by2(T,H,nX,'Height','h[cm]')
 Figure2by2(T,Qout,nX,'Outflow Rate','q[cm^3/s]')
 
+function PlottedFigure = Figure2by2(a,b,n,name,yname)
+PlottedFigure = figure;
+t=tiledlayout(2,2);
+title(t,name)
+for i=1:n
+    nexttile
+    plot(a(:,1)/60,b(:,i)) % Divided over 60 to use minutes instead of second
+    title("Tank "+i)
+    xlabel('time[min]')
+    ylabel(yname)
+end
+end
+
 %% Model
 
 function xdot = FourTankSystemModel(t,x,u,p)
@@ -196,17 +209,4 @@ rho = p(12,1);
 % Compute level in each tank
 rhoA = rho*A;
 z = m./rhoA;
-end
-
-function PlottedFigure = Figure2by2(a,b,n,name,yname)
-PlottedFigure = figure;
-t=tiledlayout(2,2);
-title(t,name)
-for i=1:n
-    nexttile
-    plot(a(:,1)/60,b(:,i)) % Divided over 60 to use minutes instead of second
-    title("Tank "+i)
-    xlabel('time[min]')
-    ylabel(yname)
-end
 end

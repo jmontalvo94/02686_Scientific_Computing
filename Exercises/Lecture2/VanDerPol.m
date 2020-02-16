@@ -1,34 +1,33 @@
 %% Driver
 
-% PreyPredator System
+% VanDerPol System
 
 % Initialize variables
 tf = 50;
 t0 = 0;
-N = 1000;
-x0 = [2;2];
-a=1;
-b=1;
+N = 10000;
+x0 = [2;0];
+mu=5;
 dt =(tf-t0)/N;
 
 % EE
-[T,X] = EulerExplicitMethodModel(@PreyPredatorModel,t0,tf,N,x0,a,b);
+[T,X] = EulerExplicitMethodModel(@VanDerPolModel,t0,tf,N,x0,mu);
 
 %% Data Visualization
 
-% PreyPredator System
+% VanDerPol System
 tiledlayout(2,1)
 for i=1:size(x0,1)
     nexttile
     plot(T,X(:,i), 'LineWidth',2)
-    title("a = "+a+", b = "+b+", \Deltat = "+dt)
+    title("\mu="+mu)
     xlabel('time')
     ylabel("x_{"+i+"}(t)")
 end
 tiledlayout(1,1)
 nexttile
 plot(X(:,1),X(:,2), 'LineWidth',2)
-title("a = "+a+", b = "+b+", \Deltat = "+dt)
+title("\mu="+mu)
 xlabel('x_{1}(t)')
 ylabel('x_{2}(t)')
 
@@ -56,11 +55,11 @@ T = T';
 X = X';
 end
 
-function xdot = PreyPredatorModel(t,x,a,b)
-% PREYPREDATOR The Prey-Predator Model
+function xdot = VanDerPolModel(t,x,mu)
+% VANDERPOL Implementation of the Van der Pol model
 %
-% Syntax: xdot = PreyPredator(t,x,a,b)
-xdot = zeros(2,1);
-xdot(1) = a*(1-x(2))*x(1);
-xdot(2) = -b*(1-x(1))*x(2);
+% Syntax: xdot = VanDerPol(t,x,mu)
+xdot=zeros(2,1);
+xdot(1) = x(2);
+xdot(2) = mu*(1-x(1)*x(1))*x(2)-x(1);
 end

@@ -5,11 +5,13 @@ x0 = [2.0; 0.0];
 options = odeset('Jacobian',@JacVanDerPol,'RelTol',1.0e-6,'AbsTol',1.0e-6);
 [T,X]=ode15s(@VanDerPolModel,[0 5*mu],x0,options,mu);
 
+tiledlayout(2,1)
+nexttile
 plot(T,X(:,1))
 title("\mu="+mu)
 xlabel('time')
 ylabel('x_{1}(t)')
-
+nexttile
 plot(T,X(:,2))
 title("\mu="+mu)
 xlabel('time')

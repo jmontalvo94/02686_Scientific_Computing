@@ -1,44 +1,44 @@
 using DifferentialEquations
+using Plots
 
-## Driver
+## Initialize variables
 
-μ = 10
+μ = 10.0
 x₀ = [2.0 0.0]
-t = 5.0*μ
-prob = ODEProblem(VanDerPolModel,t,x₀,μ)
-options = odeset("Jacobian',@JacVanDerPol,'RelTol',1.0e-6,'AbsTol",1.0e-6)
-[T,X]=ode15s(@VanDerPolModel,[0 5*mu],x0,options,mu)
-
-plot(T,X[:,1])
-title("\mu="+mu)
-xlabel("time")
-ylabel("x_[1](t)")
-
-plot(T,X[:,2])
-title("\mu="+mu)
-xlabel("time")
-ylabel("x_[2](t)")
+tspan = (0.0, 5.0*μ)
 
 ## Model
 
-function VanDerPolModel(t,x,μ)
+function VanDerPol(ẋ,x₀,tspan,μ)
 # VANDERPOL Implementation of the Van der Pol model
 #
-# Syntax: xdot = VanDerPol[t,x,μ]
-    ẋ=zeros(2,1)
-    ẋ[1] = x[2]
-    ẋ[2] = μ*(1-x[1]*x[1])*x[2]-x[1]
+# Syntax: ẋ = VanDerPol(x,t,μ)
+    ẋ = zeros(2)
+    x₁, x₂ = x₀
+    ẋ[1] = x₂
+    ẋ[2] = μ*(1-x₁*x₁)*x₂-x₁
     return ẋ
 end
 
-function JacVanDerPol(t,x,μ)
+function JacVanDerPol(Jac,x₀,tspan,μ)
 # JACVANDERPOL Jacobian for the Van der Pol Equation
 #
-# Syntax: Jac = JacVanDerPol(t,x,μ)
-
-    Jac = zeros(2,2)
-    Jac[2,1] = -2*μ*x[1]*x[2]-1.0
+# Syntax: Jac = JacVanDerPol(x,t,μ)
+    Jac = zeros(2, 2)
+    x₁, x₂ = x₀
+    Jac[2,1] = -2*μ*x₁*x₂-1.0
     Jac[1,2] = 1.0
-    Jac[2,2] = μ*(1-x[1]*x[1])
+    Jac[2,2] = μ*(1-x₁*x₁)
     return Jac
 end
+
+ẋ = ODEFunction(VanDerPol;jac=JacVanDerPol)
+
+## Define the problem and solve
+
+prob = ODEProblem(ẋ,x₀,tspan,μ)
+sol = solve(prob, QNDF(), reltol=1e-6, abstol=1e-6)
+
+## Data Visualization
+
+plot(sol)
